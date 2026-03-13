@@ -8,7 +8,6 @@ python-dotenv
 langchain
 langchain-groq
 langchain-chroma
-langchain-huggingface
-sentence-transformers
+langchain-community
 chromadb
-tf-keras
+
