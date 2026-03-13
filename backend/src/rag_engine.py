@@ -41,7 +41,7 @@ def get_rag_chain():
         raise ValueError("GROQ_API_KEY not found. Check your .env file!")
 
     embeddings = HuggingFaceInferenceAPIEmbeddings(
-        model="sentence-transformers/all-MiniLM-L6-v2",
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
         api_key=os.getenv("HF_API_TOKEN"),
     )
 
