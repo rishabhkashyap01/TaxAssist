@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: taxassist-backend
+    env: python
+    region: singapore           # Pick the region closest to your users
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false             # Set manually in Render dashboard
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: tax_assistant
+      - key: JWT_SECRET
+        sync: false             # Generate: python -c "import secrets; print(secrets.token_hex(32))"
+      - key: ALLOWED_ORIGIN
+        sync: false             # Set to your Vercel URL, e.g. https://taxassist.vercel.app
+      - key: HF_API_TOKEN
+        sync: false             # Set manually in Render dashboard

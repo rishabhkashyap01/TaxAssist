@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-jose[cryptography]
+bcrypt
+pymongo[srv]
+python-dotenv
+langchain
+langchain-groq
+langchain-chroma
+langchain-huggingface
+sentence-transformers
+chromadb
+tf-keras
