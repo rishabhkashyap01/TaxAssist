@@ -30,6 +30,7 @@ export default function Sidebar({ username }: SidebarProps) {
 
   async function handleLogout() {
     await api.post("/api/auth/logout");
+    document.cookie = "access_token=; path=/; max-age=0";
     router.push("/login");
     router.refresh();
   }
