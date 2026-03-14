@@ -2,7 +2,7 @@
 // In local dev, Next.js proxies /api/* → FastAPI (same-origin, no CORS)
 // In production, set NEXT_PUBLIC_API_URL to your Render backend URL
 
-const BASE =
+export const BASE =
   process.env.NODE_ENV === "development"
     ? ""  // Use Next.js proxy (/api/* → FastAPI)
     : (process.env.NEXT_PUBLIC_API_URL ?? "");

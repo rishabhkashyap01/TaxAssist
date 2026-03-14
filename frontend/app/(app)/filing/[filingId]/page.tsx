@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, use } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, BASE } from "@/lib/api";
 import { streamPost } from "@/hooks/useSSE";
 import { ITRFiling, Message, createDefaultFiling } from "@/lib/types";
 import { getStepProgress, getStepLabel } from "@/lib/utils";
@@ -47,7 +47,7 @@ export default function FilingChatPage({ params }: { params: Promise<{ filingId:
     setIsThinking(true);
     let accumulated = "";
     await streamPost(
-      "/api/filing/welcome",
+      `${BASE}/api/filing/welcome`,
       { filing_state: f },
       (token) => { setIsThinking(false); accumulated += token; setStreaming(accumulated); },
       (data) => {
@@ -82,7 +82,7 @@ export default function FilingChatPage({ params }: { params: Promise<{ filingId:
     let accumulated = "";
 
     await streamPost(
-      "/api/filing/message/stream",
+      `${BASE}/api/filing/message/stream`,
       {
         filing_state: filing,
         messages: updatedMessages,

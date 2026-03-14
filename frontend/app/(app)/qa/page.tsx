@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Message } from "@/lib/types";
 import { streamGet } from "@/hooks/useSSE";
+import { BASE } from "@/lib/api";
 import ChatWindow from "@/components/chat/ChatWindow";
 import ChatInput from "@/components/chat/ChatInput";
 
@@ -21,7 +22,7 @@ export default function QAPage() {
     setIsThinking(true);
 
     let accumulated = "";
-    const url = `/api/qa/stream?q=${encodeURIComponent(text)}`;
+    const url = `${BASE}/api/qa/stream?q=${encodeURIComponent(text)}`;
 
     streamGet(
       url,
