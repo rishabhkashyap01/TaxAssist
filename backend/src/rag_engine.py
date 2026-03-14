@@ -103,13 +103,17 @@ def get_rag_chain():
                 pass
 
         # 3. Semantic search for broader context
-        semantic_docs = semantic_retriever.invoke(query)
-        for doc in semantic_docs:
-            doc_id = doc.page_content[:100]
-            if doc_id not in seen_ids:
-                targeted_docs.append(doc)
-                seen_ids.add(doc_id)
-
+        try:
+            semantic_docs = semantic_retriever.invoke(query)
+            for doc in semantic_docs:
+                doc_id = doc.page_content[:100]
+                if doc_id not in seen_ids:
+                    targeted_docs.append(doc)
+                    seen_ids.add(doc_id)
+        except Exception as e:
+            print(f"[RAG] Semanti search failed: {e}")
+            pass
+        
         return targeted_docs[:10]
 
     llm = ChatGroq(

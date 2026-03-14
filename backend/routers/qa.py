@@ -37,9 +37,18 @@ async def qa_stream(
     async def generate():
         try:
             # Run the blocking RAG call in a thread to avoid blocking the event loop
-            full_response: str = await asyncio.to_thread(
-                rag_chain.invoke, {"input": q}
-            )
+            #retry once
+            try:
+                full_response: str = await asyncio.to_thread(
+                    rag_chain.invoke, {"input": q}
+                )
+            except Exception:
+                print("f[QA] RAG invoke failed, retrying: {e}")
+                await asyncio.sleep(2)
+                full_response: str = await asyncio.to_thread(
+                    rag_chain.invoke, {"input": q}
+                )
+
 
             # Stream word-by-word with a small delay for smooth UX
             words = full_response.split(" ")
