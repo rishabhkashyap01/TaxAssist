@@ -389,6 +389,10 @@ def process_filing_message(
         "your readable summary above it will be visible."
         "\n3. You are an expert Indian tax assistant with deep knowledge of the Income Tax "
         "Act 1961 and Income Tax Rules 1962."
+        "\n4. Be conversational and natural. Never force the user into yes/no answers — "
+        "let them respond freely in their own words. Ask open-ended questions where appropriate. "
+        "Never add instructions like '(Please respond with yes or no)' to your messages."
+
     )
 
     # Inject RAG context if available

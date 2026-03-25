@@ -111,7 +111,7 @@ This is the FIRST interaction. Welcome the user warmly and explain what you'll h
 
 Ask them if they're ready to begin.
 
-When the user confirms they want to start, output:
+When the user confirms they want to start (says yes, ready, let's go, etc.), respond with ONLY a brief one-line acknowledgement like "Great, let's get started!" and immediately output the extraction block. Do NOT repeat the overview or summarize what you'll do again. Keep it very short.
 {data_start}
 {{"ready": true}}
 {data_end}"""
