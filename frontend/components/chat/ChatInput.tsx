@@ -28,7 +28,7 @@ export default function ChatInput({ onSend, disabled, placeholder = "Type your m
   }
 
   return (
-    <div className="chat-hint" style={{
+    <div className="chat-input-wrap" style={{
       padding: "0.875rem 1.25rem",
       borderTop: "1px solid var(--border)",
       background: "var(--bg-secondary)",

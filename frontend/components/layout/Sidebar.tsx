@@ -39,7 +39,7 @@ export default function Sidebar({ username, isOpen, onClose }: SidebarProps) {
   }
 
   return (
-    <aside className={`sidebar-mobile${isOpen ? "sidebar-open" : ""}`} style={{
+    <aside className={`sidebar-mobile${isOpen ? " sidebar-open" : ""}`} style={{
       width: "228px", minWidth: "228px",
       background: "var(--bg-secondary)",
       borderRight: "1px solid var(--border)",

@@ -66,7 +66,7 @@ export default function QAPage() {
             <h1 style={{ fontSize: "1.1rem", fontWeight: 800, letterSpacing: "-0.025em", margin: 0 }}>
               Tax Q&amp;A
             </h1>
-            <span className="qa-substitle" style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 400 }}>Income Tax Act 1961 · 518 Rules</span>
+            <span className="qa-subtitle" style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 400 }}>Income Tax Act 1961 · 518 Rules</span>
           </div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}>
