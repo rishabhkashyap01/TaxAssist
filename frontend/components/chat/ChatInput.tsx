@@ -84,7 +84,7 @@ export default function ChatInput({ onSend, disabled, placeholder = "Type your m
           }}
         >↑</button>
       </div>
-      <div style={{ textAlign: "center", fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.4rem" }}>
+      <div className="chat-hint" style={{ textAlign: "center", fontSize: "0.68rem", color: "var(--text-muted)", marginTop: "0.4rem" }}>
         Enter to send · Shift+Enter for new line
       </div>
     </div>

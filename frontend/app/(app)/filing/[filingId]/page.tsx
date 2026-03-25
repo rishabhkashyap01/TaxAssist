@@ -19,7 +19,7 @@ export default function FilingChatPage({ params }: { params: Promise<{ filingId:
   const [streaming, setStreaming] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   // Load filing on mount

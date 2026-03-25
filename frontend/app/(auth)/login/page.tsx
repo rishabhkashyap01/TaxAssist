@@ -95,7 +95,7 @@ function LoginContent() {
       </button>
 
       {/* LEFT — branding */}
-      <div style={{
+      <div className="login-brand" style={{
         flex: "0 0 52%", display: "flex", flexDirection: "column",
         justifyContent: "center", padding: "4rem 5%",
         position: "relative", zIndex: 1,
@@ -147,7 +147,7 @@ function LoginContent() {
       </div>
 
       {/* Divider */}
-      <div style={{
+      <div className="login-divider" style={{
         position: "absolute", left: "52%", top: "10%", bottom: "10%", width: "1px",
         background: "linear-gradient(to bottom, transparent, rgba(59,130,246,0.2), transparent)",
         zIndex: 1,

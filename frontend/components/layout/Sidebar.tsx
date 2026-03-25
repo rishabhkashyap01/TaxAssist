@@ -6,7 +6,10 @@ import { useTheme } from "@/context/ThemeContext";
 
 interface SidebarProps {
   username: string;
+  isOpen: boolean;
+  onClose: () => void;
 }
+
 
 const NAV = [
   {
@@ -23,7 +26,7 @@ const NAV = [
   },
 ];
 
-export default function Sidebar({ username }: SidebarProps) {
+export default function Sidebar({ username, isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
@@ -36,7 +39,7 @@ export default function Sidebar({ username }: SidebarProps) {
   }
 
   return (
-    <aside style={{
+    <aside className={`sidebar0mobile${isOpen ? "sidebar-open": ""}`} style={{
       width: "228px", minWidth: "228px",
       background: "var(--bg-secondary)",
       borderRight: "1px solid var(--border)",
@@ -91,7 +94,7 @@ export default function Sidebar({ username }: SidebarProps) {
         {NAV.map(({ href, label, sub, svgPath }) => {
           const active = pathname.startsWith(href);
           return (
-            <Link key={href} href={href} style={{
+            <Link key={href} href={href} onClick={onClose} style={{
               display: "flex", alignItems: "center", gap: "0.75rem",
               padding: "0.65rem 0.75rem", borderRadius: "10px",
               textDecoration: "none", position: "relative", overflow: "hidden",

@@ -9,6 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     api.get<AuthUser>("/api/auth/me")
@@ -43,10 +44,35 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      <Sidebar username={user.username} />
+      {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+
+      <Sidebar username={user.username} isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
       <main style={{ flex: 1, overflow: "auto", display: "flex", flexDirection: "column", position: "relative" }}>
+        <div className="mobile-header">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            style={{
+              background: "var(--bg-glass)", border: "1px solid var(--border)",
+              borderRadius: "8px", padding: "0.4rem 0.45rem",
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <span style={{
+            fontSize: "1rem", fontWeight: 800, letterSpacing: "-0.025em",
+            background: "linear-gradient(135deg, #93c5fd, #60a5fa, #22d3ee)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>TaxAssist</span>
+        </div>
+
         {children}
       </main>
     </div>
   );
 }
+
+

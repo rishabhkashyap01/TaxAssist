@@ -30,7 +30,7 @@ export default function FilingPage() {
   }
 
   return (
-    <div style={{ padding: "2.5rem 3rem", maxWidth: "820px", margin: "0 auto", width: "100%" }}>
+    <div className="page-pad" style={{ padding: "2.5rem 3rem", maxWidth: "820px", margin: "0 auto", width: "100%" }}>
       {/* Hero */}
       <div className="fade-up" style={{ marginBottom: "2.5rem" }}>
         <div style={{ marginBottom: "0.75rem" }}>
