@@ -51,7 +51,7 @@ export default function FilingPage() {
       </div>
 
       {/* Start new banner */}
-      <div className="fade-up fade-up-1" style={{
+      <div className="fade-up fade-up-1 filing-banner" style={{
         marginBottom: "2rem",
         position: "relative", overflow: "hidden",
         background: "linear-gradient(135deg,rgba(29,78,216,0.2),rgba(37,99,235,0.12),rgba(6,182,212,0.08))",

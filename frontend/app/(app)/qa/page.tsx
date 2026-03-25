@@ -54,7 +54,7 @@ export default function QAPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       {/* Header */}
-      <div style={{
+      <div className="qa-header" style={{
         padding: "1rem 1.75rem",
         borderBottom: "1px solid var(--border)",
         display: "flex", alignItems: "center", gap: "1rem",
@@ -66,7 +66,7 @@ export default function QAPage() {
             <h1 style={{ fontSize: "1.1rem", fontWeight: 800, letterSpacing: "-0.025em", margin: 0 }}>
               Tax Q&amp;A
             </h1>
-            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 400 }}>Income Tax Act 1961 · 518 Rules</span>
+            <span className="qa-substitle" style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 400 }}>Income Tax Act 1961 · 518 Rules</span>
           </div>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -79,7 +79,7 @@ export default function QAPage() {
 
       {/* Empty state */}
       {messages.length === 0 && !isStreaming && (
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+        <div className="qa-empty" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
           <div style={{ textAlign: "center", maxWidth: "500px" }}>
             <div style={{ marginBottom: "2rem" }}>
               <h2 style={{ fontSize: "2rem", fontWeight: 900, letterSpacing: "-0.04em", marginBottom: "0.6rem", lineHeight: 1.1 }}>

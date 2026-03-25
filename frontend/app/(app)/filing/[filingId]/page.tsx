@@ -154,7 +154,7 @@ export default function FilingChatPage({ params }: { params: Promise<{ filingId:
       {/* Main chat area */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         {/* Top bar */}
-        <div style={{
+        <div className="filing-topbar" style={{
           padding: "0.75rem 1.25rem", borderBottom: "1px solid var(--border)",
           display: "flex", alignItems: "center", gap: "0.875rem",
           background: "var(--bg-secondary)",
@@ -198,19 +198,22 @@ export default function FilingChatPage({ params }: { params: Promise<{ filingId:
 
       {/* Step tracker sidebar */}
       {sidebarOpen && (
-        <div style={{
-          width: "196px", minWidth: "196px",
-          borderLeft: "1px solid var(--border)",
-          overflowY: "auto",
-          background: "rgba(0,0,0,0.25)",
-          backdropFilter: "blur(20px)",
-        }}>
-          <StepTracker
-            formType={filing.form_type || "ITR-1"}
-            currentStep={filing.current_step}
-            completedSteps={filing.completed_steps}
-          />
-        </div>
+        <>
+          <div className="step-tracker-backdrop" onClick={() => setSidebarOpen(false)} />
+          <div className="step-tracker-panel" style={{
+            width: "196px", minWidth: "196px",
+            borderLeft: "1px solid var(--border)",
+            overflowY: "auto",
+            background: "rgba(0,0,0,0.25)",
+            backdropFilter: "blur(20px)",
+          }}>
+            <StepTracker
+              formType={filing.form_type || "ITR-1"}
+              currentStep={filing.current_step}
+              completedSteps={filing.completed_steps}
+            />
+          </div>
+        </>
       )}
     </div>
   );

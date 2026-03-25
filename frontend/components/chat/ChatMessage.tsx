@@ -30,7 +30,7 @@ export default function ChatMessage({ message, streaming }: Props) {
   const isUser = message.role === "user";
 
   return (
-    <div style={{
+    <div className="chat-msg-row" style={{
       display: "flex",
       justifyContent: isUser ? "flex-end" : "flex-start",
       alignItems: "flex-end",

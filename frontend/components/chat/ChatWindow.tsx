@@ -11,7 +11,7 @@ interface Props {
 
 function ThinkingIndicator() {
   return (
-    <div style={{
+    <div className="chat-msg-row" style={{
       display: "flex", alignItems: "flex-end", gap: "0.5rem",
       marginBottom: "0.875rem", padding: "0 1.25rem",
     }}>
