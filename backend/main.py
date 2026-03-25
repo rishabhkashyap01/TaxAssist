@@ -1,14 +1,13 @@
 """
 TaxAssist FastAPI Backend
 =========================
-Entry point. Mounts all routers and initializes RAG in background.
+Entry point. Mounts all routers and warms up RAG on startup.
 """
 
 from __future__ import annotations
 
 import asyncio
 import os
-import time
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -32,21 +31,26 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
-# Background RAG Initialization
+# Startup: warm up RAG chain so first user request is fast
 # ---------------------------------------------------------------------------
-from src.rag_manager import initialize_rag_background
+rag_chain = None
+
 
 @app.on_event("startup")
 async def startup_event():
-    # Start RAG initialization in background immediately
-    from src.rag_manager import initialize_rag_background
-    await initialize_rag_background()
+    global rag_chain
+    try:
+        from src.rag_engine import get_rag_chain
+        rag_chain = await asyncio.to_thread(get_rag_chain)
+        print("RAG chain initialized successfully.")
+    except Exception as e:
+        print(f"WARNING: RAG chain failed to initialize: {e}")
+        rag_chain = None
 
 
 def get_rag() -> object | None:
-    """Dependency: return the cached RAG chain (initialize if needed)."""
-    from src.rag_manager import get_rag_or_wait
-    return asyncio.run(get_rag_or_wait(timeout=5.0))
+    """Dependency: return the cached RAG chain."""
+    return rag_chain
 
 
 # ---------------------------------------------------------------------------
@@ -61,7 +65,5 @@ app.include_router(filings.router, prefix="/api/filings", tags=["filings"])
 
 
 @app.get("/health")
-async def health():
-    from src.rag_manager import is_rag_ready
-    rag_ready = await is_rag_ready()
-    return {"status": "ok", "rag_ready": rag_ready}
+def health():
+    return {"status": "ok", "rag_ready": rag_chain is not None}
