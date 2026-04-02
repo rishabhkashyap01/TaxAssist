@@ -18,7 +18,7 @@ load_dotenv()
 app = FastAPI(title="TaxAssist API", version="1.0.0")
 
 # ---------------------------------------------------------------------------
-# CORS — must list exact Vercel origin; never use "*" with credentials
+# CORS — must list exact Vercel origin; never use "*" with credentials (security)
 # ---------------------------------------------------------------------------
 ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "http://localhost:3000")
 
