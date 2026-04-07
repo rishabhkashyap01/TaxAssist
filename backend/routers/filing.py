@@ -23,9 +23,7 @@ from src.itr_models import ITRFiling
 router = APIRouter()
 
 
-# ---------------------------------------------------------------------------
 # Schemas
-# ---------------------------------------------------------------------------
 
 class FilingMessageRequest(BaseModel):
     filing_state: dict[str, Any]          # ITRFiling serialised via to_dict()
@@ -37,10 +35,7 @@ class FilingMessageRequest(BaseModel):
 class WelcomeRequest(BaseModel):
     filing_state: dict[str, Any]
 
-
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 async def _stream_response(
     request: Request,
@@ -101,10 +96,7 @@ async def _stream_response(
         },
     )
 
-
-# ---------------------------------------------------------------------------
 # Endpoints
-# ---------------------------------------------------------------------------
 
 @router.post("/message/stream")
 async def filing_message_stream(
