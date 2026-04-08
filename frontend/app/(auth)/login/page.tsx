@@ -33,14 +33,27 @@ function LoginContent() {
   const [backendReady, setBackendReady] = useState(false);
 
   // Wake up the Render backend the moment login page loads.
-  // Keeps the submit button disabled until backend responds.
+  // Keeps the submit button disabled until backend responds (or 70s timeout).
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_URL ?? "";
-    const ping = () =>
+    let cancelled = false;
+
+    // Hard fallback: enable button after 70s so user is never stuck forever
+    const fallback = setTimeout(() => { if (!cancelled) setBackendReady(true); }, 70000);
+
+    const ping = () => {
+      if (cancelled) return;
       fetch(`${base}/health`, { method: "GET" })
-        .then(() => setBackendReady(true))
-        .catch(() => setTimeout(ping, 3000)); // retry every 3s if still sleeping
+        .then(res => {
+          if (cancelled) return;
+          if (res.ok) { clearTimeout(fallback); setBackendReady(true); }
+          else setTimeout(ping, 5000); // non-OK (e.g. 521) — keep retrying
+        })
+        .catch(() => { if (!cancelled) setTimeout(ping, 5000); }); // network/CORS error — keep retrying
+    };
     ping();
+
+    return () => { cancelled = true; clearTimeout(fallback); };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
