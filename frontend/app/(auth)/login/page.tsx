@@ -31,29 +31,50 @@ function LoginContent() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [backendReady, setBackendReady] = useState(false);
+  const [wakingUp, setWakingUp] = useState(false);
+  const [wakeSeconds, setWakeSeconds] = useState(0);
 
   // Wake up the Render backend the moment login page loads.
-  // Keeps the submit button disabled until backend responds (or 70s timeout).
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_URL ?? "";
     let cancelled = false;
+    let elapsed = 0;
+    let ticker: ReturnType<typeof setInterval> | null = null;
 
-    // Hard fallback: enable button after 70s so user is never stuck forever
-    const fallback = setTimeout(() => { if (!cancelled) setBackendReady(true); }, 70000);
+    // Hard fallback: enable button after 90s so user is never stuck forever
+    const fallback = setTimeout(() => { if (!cancelled) { setBackendReady(true); setWakingUp(false); } }, 90000);
 
     const ping = () => {
       if (cancelled) return;
       fetch(`${base}/health`, { method: "GET" })
         .then(res => {
           if (cancelled) return;
-          if (res.ok) { clearTimeout(fallback); setBackendReady(true); }
-          else setTimeout(ping, 5000); // non-OK (e.g. 521) — keep retrying
+          if (res.ok) {
+            clearTimeout(fallback);
+            if (ticker) clearInterval(ticker);
+            setBackendReady(true);
+            setWakingUp(false);
+          } else {
+            if (!wakingUp) setWakingUp(true);
+            setTimeout(ping, 3000);
+          }
         })
-        .catch(() => { if (!cancelled) setTimeout(ping, 5000); }); // network/CORS error — keep retrying
+        .catch(() => {
+          if (cancelled) return;
+          setWakingUp(true);
+          setTimeout(ping, 3000);
+        });
     };
+
+    // Start elapsed counter once first ping fails
+    ticker = setInterval(() => {
+      elapsed += 1;
+      setWakeSeconds(elapsed);
+    }, 1000);
+
     ping();
 
-    return () => { cancelled = true; clearTimeout(fallback); };
+    return () => { cancelled = true; clearTimeout(fallback); if (ticker) clearInterval(ticker); };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -261,7 +282,7 @@ function LoginContent() {
                 ) : !backendReady ? (
                   <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.6rem" }}>
                     <span style={{ width: "15px", height: "15px", border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.7s linear infinite", display: "inline-block" }} />
-                    Connecting...
+                    {wakingUp ? `Waking up server… ${wakeSeconds}s` : "Connecting..."}
                   </span>
                 ) : (tab === "login" ? "Sign In →" : "Create Account →")}
               </button>

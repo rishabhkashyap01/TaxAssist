@@ -64,6 +64,11 @@ app.include_router(filing.router,  prefix="/api/filing",  tags=["filing"])
 app.include_router(filings.router, prefix="/api/filings", tags=["filings"])
 
 
+@app.get("/")
+def root():
+    return {"status": "ok"}
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "rag_ready": rag_chain is not None}
