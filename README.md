@@ -2,6 +2,10 @@
 
 An AI-powered Indian Income Tax Return (ITR) filing assistant. Combines a RAG-based Q&A engine (trained on 518 Income Tax Rules + the Income Tax Act 1961) with a guided conversational ITR filing flow supporting ITR-1 through ITR-4 for AY 2025-26.
 
+<img src="asset/Image.png" alt="Picture" width=600>
+
+[Delpoyed Link](tax-assist-drab.vercel.app)
+
 ## Features
 
 - **Conversational ITR Filing** — AI guides you step-by-step through the entire ITR filing process (personal info, income sources, deductions, tax computation, bank details, summary)
@@ -27,71 +31,9 @@ An AI-powered Indian Income Tax Return (ITR) filing assistant. Combines a RAG-ba
 | Database | MongoDB Atlas |
 | Authentication | bcrypt + JWT (httpOnly cookies) |
 | Data Scraping | BeautifulSoup, Crawl4AI, Playwright |
-| Deployment | Vercel (frontend) + Render (backend) |
+| Deployment | Vercel (frontend) + Railway (backend) |
 
-## Project Structure
 
-```
-income_tax_assistent/
-│
-├── backend/                      # FastAPI backend (deploy to Render)
-│   ├── main.py                   # FastAPI app, CORS, RAG startup warmup
-│   ├── requirements.txt          # Python dependencies
-│   ├── render.yaml               # Render deployment config
-│   ├── .env.example              # Environment variable template
-│   ├── src/
-│   │   ├── auth.py               # bcrypt auth + JWT token functions
-│   │   ├── database.py           # MongoDB connection singleton
-│   │   ├── filing_engine.py      # LLM-driven state machine (12 filing steps)
-│   │   ├── filing_storage.py     # Filing CRUD (MongoDB)
-│   │   ├── itr_models.py         # ITR dataclasses (PersonalInfo, SalaryIncome, etc.)
-│   │   ├── itr_prompts.py        # Step-specific LLM prompts per ITR form
-│   │   ├── rag_engine.py         # RAG chain with hybrid retrieval
-│   │   └── tax_engine.py         # Tax computation (slabs, rebate, surcharge, cess)
-│   ├── routers/
-│   │   ├── auth.py               # POST /api/auth/login, /register, /logout, GET /me
-│   │   ├── qa.py                 # GET /api/qa/stream (SSE)
-│   │   ├── filing.py             # POST /api/filing/message/stream, /welcome (SSE)
-│   │   └── filings.py            # GET/POST/PATCH/DELETE /api/filings
-│   ├── middleware/
-│   │   └── auth_middleware.py    # JWT cookie → user dict (FastAPI Depends)
-│   └── data/
-│       └── chroma_db/            # ChromaDB vector store (518 rules + IT Act)
-│
-├── frontend/                     # Next.js frontend (deploy to Vercel)
-│   ├── app/
-│   │   ├── layout.tsx            # Root layout with ThemeProvider + anti-flash script
-│   │   ├── page.tsx              # Redirects to /filing
-│   │   ├── globals.css           # Blue/cyan theme + light & dark mode CSS variables
-│   │   ├── icon.svg              # Favicon (₹ on blue-cyan gradient)
-│   │   ├── (auth)/login/         # Login + Register page
-│   │   └── (app)/
-│   │       ├── layout.tsx        # Auth guard + sidebar shell
-│   │       ├── qa/page.tsx       # Q&A chat with SSE streaming
-│   │       └── filing/
-│   │           ├── page.tsx      # Filing list + Start New Filing
-│   │           └── [filingId]/   # Active filing chat + step tracker
-│   ├── components/
-│   │   ├── layout/Sidebar.tsx    # Navigation sidebar with theme toggle
-│   │   ├── chat/                 # ChatWindow, ChatMessage, ChatInput
-│   │   └── filing/               # FilingCard, StepTracker
-│   ├── context/
-│   │   └── ThemeContext.tsx      # Theme state + toggleTheme hook
-│   ├── hooks/
-│   │   └── useSSE.ts             # streamGet (EventSource) + streamPost (fetch)
-│   ├── lib/
-│   │   ├── types.ts              # TypeScript interfaces + createDefaultFiling()
-│   │   ├── api.ts                # Typed fetch wrapper with cookie support
-│   │   └── utils.ts              # Step labels, progress helpers
-│   ├── middleware.ts             # Route protection (cookie check → redirect /login)
-│   └── next.config.ts           # API proxy for local dev (/api/* → FastAPI :8001)
-│
-├── data/                         # Shared data (chroma_db, raw_markdown, raw_pdf)
-└── scrapers/                     # One-time scraping scripts
-    ├── incomeTaxActScraper.py
-    ├── incomeTaxRuleScraper.py
-    └── scrape_all_rules.py
-```
 
 ## Local Development Setup
 
@@ -155,30 +97,6 @@ Go to `http://localhost:3002`, register an account, and start filing.
 
 ---
 
-## Deployment
-
-### Backend → Render
-
-1. Push repo to GitHub
-2. Create a new **Web Service** on [Render](https://render.com) — the `backend/render.yaml` is pre-configured
-3. Add environment variables in the Render dashboard:
-   - `GROQ_API_KEY`
-   - `MONGO_URI`
-   - `MONGO_DB_NAME` = `income_tax`
-   - `JWT_SECRET` — generate with `python -c "import secrets; print(secrets.token_hex(32))"`
-   - `ALLOWED_ORIGIN` = your Vercel URL (e.g. `https://taxassist.vercel.app`)
-   - `HF_API_TOKEN`
-
-> **Note:** Render free tier sleeps after 15 min of inactivity (~60s cold start). The frontend fires a silent wake-up ping on page load so users never feel the delay.
-
-### Frontend → Vercel
-
-1. Import repo to [Vercel](https://vercel.com), set root directory to `frontend/`
-2. Add environment variable:
-   - `NEXT_PUBLIC_API_URL` = your Render backend URL (e.g. `https://taxassist-backend.onrender.com`)
-3. After deploy, set `ALLOWED_ORIGIN` in Render to your Vercel URL
-
----
 
 ## API Reference
 
@@ -223,4 +141,4 @@ Go to `http://localhost:3002`, register an account, and start filing.
 ### Frontend
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `NEXT_PUBLIC_API_URL` | Production only | Render backend URL |
+| `NEXT_PUBLIC_API_URL` | Production only | Railway backend URL |
