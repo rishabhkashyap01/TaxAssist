@@ -9,5 +9,6 @@ langchain
 langchain-groq
 langchain-chroma
 langchain-community
+langchain-huggingface
 chromadb
 

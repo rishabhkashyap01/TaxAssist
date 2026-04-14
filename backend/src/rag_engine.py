@@ -3,7 +3,7 @@ import re
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from operator import itemgetter
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
@@ -40,9 +40,9 @@ def get_rag_chain():
     if not api_key:
         raise ValueError("GROQ_API_KEY not found. Check your .env file!")
 
-    embeddings = HuggingFaceInferenceAPIEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        api_key=os.getenv("HF_API_TOKEN"),
+    embeddings = HuggingFaceEndpointEmbeddings(
+        model="sentence-transformers/all-MiniLM-L6-v2",
+        huggingfacehub_api_token=os.getenv("HF_API_TOKEN"),
     )
 
     if not os.path.exists(DB_DIR):
