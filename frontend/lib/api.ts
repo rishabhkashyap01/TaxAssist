@@ -1,11 +1,8 @@
 // Typed fetch wrapper — always sends cookies, always uses /api prefix
-// In local dev, Next.js proxies /api/* → FastAPI (same-origin, no CORS)
-// In production, set NEXT_PUBLIC_API_URL to your Render backend URL
+// Next.js rewrites proxy /api/* → FastAPI in both dev and production,
+// so we always use a relative base URL (same-origin, no CORS, no blocked cookies).
 
-export const BASE =
-  process.env.NODE_ENV === "development"
-    ? ""  // Use Next.js proxy (/api/* → FastAPI)
-    : (process.env.NEXT_PUBLIC_API_URL ?? "");
+export const BASE = "";
 
 async function request<T>(
   path: string,

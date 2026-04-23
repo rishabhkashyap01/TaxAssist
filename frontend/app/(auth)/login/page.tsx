@@ -36,7 +36,6 @@ function LoginContent() {
 
   // Wake up the Render backend the moment login page loads.
   useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "";
     let cancelled = false;
     let elapsed = 0;
     let ticker: ReturnType<typeof setInterval> | null = null;
@@ -46,7 +45,7 @@ function LoginContent() {
 
     const ping = () => {
       if (cancelled) return;
-      fetch(`${base}/health`, { method: "GET" })
+      fetch(`/health`, { method: "GET" })
         .then(res => {
           if (cancelled) return;
           if (res.ok) {
@@ -82,9 +81,6 @@ function LoginContent() {
     setError(""); setLoading(true);
     try {
       await api.post(tab === "login" ? "/api/auth/login" : "/api/auth/register", { username, password });
-      const secure = location.protocol === "https:" ? "; Secure" : "";
-      document.cookie = `access_token=1; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax${secure}`;
-
       router.push(searchParams.get("next") ?? "/filing");
       router.refresh();
     } catch (err: unknown) {
