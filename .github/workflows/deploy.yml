@@ -1,0 +1,33 @@
+name: Deploy to GCP
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to GCP VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.GCP_VM_HOST }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/TaxAssist
+            git pull origin main
+            sudo docker build -t taxassist-backend ./backend
+            sudo docker stop taxassist || true
+            sudo docker rm taxassist || true
+            sudo docker run -d \
+              --name taxassist \
+              --restart=always \
+              -p 8000:8000 \
+              --env-file ./backend/.env \
+              taxassist-backend
+            sudo docker image prune -f
