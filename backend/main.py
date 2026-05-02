@@ -71,4 +71,4 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "rag_ready": rag_chain is not None, "version": "1.0.1"}
+    return {"status": "ok", "rag_ready": rag_chain is not None, "version": "1.0.2"}
