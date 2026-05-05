@@ -1,15 +1,3 @@
-"""
-Filings CRUD Router
-===================
-GET    /api/filings              — list all filings for current user
-POST   /api/filings              — save a new filing
-GET    /api/filings/{filing_id}  — load a filing + chat history
-PATCH  /api/filings/{filing_id}  — update an existing filing
-DELETE /api/filings/{filing_id}  — delete a filing
-"""
-
-from __future__ import annotations
-
 from typing import Any
 
 from bson import ObjectId
@@ -30,10 +18,6 @@ from src.itr_models import ITRFiling
 router = APIRouter()
 
 
-# ---------------------------------------------------------------------------
-# Schemas
-# ---------------------------------------------------------------------------
-
 class SaveFilingRequest(BaseModel):
     filing_state: dict[str, Any]
     messages: list[dict[str, str]] = []
@@ -44,26 +28,14 @@ class UpdateFilingRequest(BaseModel):
     messages: list[dict[str, str]] = []
 
 
-# ---------------------------------------------------------------------------
-# Ownership guard
-# ---------------------------------------------------------------------------
-
 def _assert_owner(filing_id: str, user_id: str):
-    """Raise 404 if the filing doesn't exist or doesn't belong to this user."""
     db = get_db()
-    doc = db.filings.find_one(
-        {"_id": ObjectId(filing_id)},
-        {"user_id": 1},
-    )
+    doc = db.filings.find_one({"_id": ObjectId(filing_id)}, {"user_id": 1})
     if doc is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Filing not found")
     if str(doc["user_id"]) != user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not your filing")
 
-
-# ---------------------------------------------------------------------------
-# Endpoints
-# ---------------------------------------------------------------------------
 
 @router.get("")
 def list_user_filings(current_user: dict = Depends(get_current_user)):

@@ -1,18 +1,10 @@
-"""
-Q&A Router
-==========
-GET /api/qa/stream?q=<question>   — SSE stream of the RAG answer
-"""
-
-from __future__ import annotations
-
 import asyncio
 import json
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
-from main import get_rag
+from deps import get_rag
 from middleware.auth_middleware import get_current_user
 
 router = APIRouter()
@@ -29,51 +21,30 @@ async def qa_stream(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Query cannot be empty")
 
     if rag_chain is None:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="RAG engine not ready. Please try again in a moment.",
-        )
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="RAG engine not ready. Please try again in a moment.")
 
     async def generate():
         try:
-            # Run the blocking RAG call in a thread to avoid blocking the event loop
-            #retry once
             try:
-                full_response: str = await asyncio.to_thread(
-                    rag_chain.invoke, {"input": q}
-                )
-            except Exception:
-                print("f[QA] RAG invoke failed, retrying: {e}")
+                response: str = await asyncio.to_thread(rag_chain.invoke, {"input": q})
+            except Exception as e:
+                print(f"[QA] RAG invoke failed, retrying: {e}")
                 await asyncio.sleep(2)
-                full_response: str = await asyncio.to_thread(
-                    rag_chain.invoke, {"input": q}
-                )
+                response: str = await asyncio.to_thread(rag_chain.invoke, {"input": q})
 
-
-            # Stream word-by-word with a small delay for smooth UX
-            words = full_response.split(" ")
-            for word in words:
-                # Stop if client disconnected
+            for word in response.split(" "):
                 if await request.is_disconnected():
                     break
-                chunk = json.dumps({"token": word + " "})
-                yield f"data: {chunk}\n\n"
+                yield f"data: {json.dumps({'token': word + ' '})}\n\n"
                 await asyncio.sleep(0.025)
 
-            # Final event with complete response
-            done_event = json.dumps({"done": True, "full": full_response})
-            yield f"data: {done_event}\n\n"
+            yield f"data: {json.dumps({'done': True, 'full': response})}\n\n"
 
         except Exception as e:
-            error_event = json.dumps({"error": str(e)})
-            yield f"data: {error_event}\n\n"
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
     return StreamingResponse(
         generate(),
         media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",   # Disable nginx buffering on Render
-            "Connection": "keep-alive",
-        },
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Connection": "keep-alive"},
     )

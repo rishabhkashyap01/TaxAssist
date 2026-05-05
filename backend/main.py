@@ -1,62 +1,43 @@
-"""
-TaxAssist FastAPI Backend
-=========================
-Entry point. Mounts all routers and warms up RAG on startup.
-"""
-
-from __future__ import annotations
-
 import asyncio
 import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+
+from deps import limiter, set_rag, get_rag
+from routers import auth, qa, filing, filings
 
 load_dotenv()
 
 app = FastAPI(title="TaxAssist API", version="1.0.0")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
 
-# ---------------------------------------------------------------------------
-# CORS — must list exact Vercel origin; never use "*" with credentials (security)
-# ---------------------------------------------------------------------------
 ALLOWED_ORIGIN = os.getenv("ALLOWED_ORIGIN", "http://localhost:3000")
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[ALLOWED_ORIGIN],
-    allow_credentials=True,   # Required for httpOnly cookies
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---------------------------------------------------------------------------
-# Startup: warm up RAG chain so first user request is fast
-# ---------------------------------------------------------------------------
-rag_chain = None
-
 
 @app.on_event("startup")
 async def startup_event():
-    global rag_chain
     try:
         from src.rag_engine import get_rag_chain
-        rag_chain = await asyncio.to_thread(get_rag_chain)
+        chain = await asyncio.to_thread(get_rag_chain)
+        set_rag(chain)
         print("RAG chain initialized successfully.")
     except Exception as e:
         print(f"WARNING: RAG chain failed to initialize: {e}")
-        rag_chain = None
 
-
-def get_rag() -> object | None:
-    """Dependency: return the cached RAG chain."""
-    return rag_chain
-
-
-# ---------------------------------------------------------------------------
-# Routers
-# ---------------------------------------------------------------------------
-from routers import auth, qa, filing, filings  # noqa: E402
 
 app.include_router(auth.router,    prefix="/api/auth",    tags=["auth"])
 app.include_router(qa.router,      prefix="/api/qa",      tags=["qa"])
@@ -71,4 +52,4 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "rag_ready": rag_chain is not None, "version": "1.0.4"}
+    return {"status": "ok", "rag_ready": get_rag() is not None, "version": "1.0.4"}
