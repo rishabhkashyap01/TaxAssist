@@ -1,5 +1,6 @@
 import asyncio
 import os
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -13,7 +14,20 @@ from routers import auth, qa, filing, filings
 
 load_dotenv()
 
-app = FastAPI(title="TaxAssist API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        from src.rag_engine import get_rag_chain
+        chain = await asyncio.to_thread(get_rag_chain)
+        set_rag(chain)
+        print("RAG chain initialized successfully.")
+    except Exception as e:
+        print(f"WARNING: RAG chain failed to initialize: {e}")
+    yield
+
+
+app = FastAPI(title="TaxAssist API", version="1.0.0", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
@@ -26,17 +40,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def startup_event():
-    try:
-        from src.rag_engine import get_rag_chain
-        chain = await asyncio.to_thread(get_rag_chain)
-        set_rag(chain)
-        print("RAG chain initialized successfully.")
-    except Exception as e:
-        print(f"WARNING: RAG chain failed to initialize: {e}")
 
 
 app.include_router(auth.router,    prefix="/api/auth",    tags=["auth"])
