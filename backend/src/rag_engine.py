@@ -13,7 +13,8 @@ load_dotenv()
 
 # Absolute path so FastAPI finds the DB regardless of working directory
 DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "chroma_db")
-GROQ_MODEL = "llama-3.3-70b-versatile"
+# Groq retired llama-3.3-70b-versatile on 16 Aug 2026 for free/developer tiers.
+GROQ_MODEL = "openai/gpt-oss-120b"
 
 
 def _extract_rule_numbers(query: str) -> list[str]:
@@ -120,7 +121,9 @@ def get_rag_chain():
         model=GROQ_MODEL,
         temperature=0,
         groq_api_key=api_key,
-        request_timeout=25.0,
+        request_timeout=45.0,
+        reasoning_effort="low",
+        model_kwargs={"include_reasoning": False},
     )
 
     template = """

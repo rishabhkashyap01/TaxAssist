@@ -24,7 +24,7 @@ An AI-powered Indian Income Tax Return (ITR) filing assistant. Combines a RAG-ba
 |-------|-----------|
 | Frontend | Next.js (App Router) + TypeScript |
 | Backend | FastAPI (Python) |
-| LLM | Groq (Llama 3.3 70B) |
+| LLM | Groq (`openai/gpt-oss-120b`) |
 | RAG Framework | LangChain |
 | Vector Database | ChromaDB (file-based, committed to git) |
 | Embeddings | HuggingFace Inference API (`all-MiniLM-L6-v2`) |

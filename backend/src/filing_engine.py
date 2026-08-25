@@ -32,7 +32,8 @@ from src.tax_engine import (
 
 load_dotenv()
 
-GROQ_MODEL = "llama-3.3-70b-versatile"
+# Groq retired llama-3.3-70b-versatile on 16 Aug 2026 for free/developer tiers.
+GROQ_MODEL = "openai/gpt-oss-120b"
 
 
 def _get_llm():
@@ -43,7 +44,9 @@ def _get_llm():
         model=GROQ_MODEL,
         temperature=0.1,
         groq_api_key=api_key,
-        max_tokens=1024,
+        max_tokens=2048,
+        reasoning_effort="low",
+        model_kwargs={"include_reasoning": False},
     )
 
 
